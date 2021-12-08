@@ -51,7 +51,7 @@ jobs:
           tags: |
             ${{ env.IMAGE }}:${{ github.sha }}
             ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ github.repository }}/altin-varsel-firewall:latest
+          cache-from: type=registry,ref=${{ github.repository }}/altinn-varsel-firewall:latest
           cache-to: type=inline
 
       - uses: nais/deploy/actions/deploy@v1

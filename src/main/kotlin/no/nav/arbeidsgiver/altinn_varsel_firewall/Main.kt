@@ -1,7 +1,6 @@
 package no.nav.arbeidsgiver.altinn_varsel_firewall
 
 import com.auth0.jwk.JwkProviderBuilder
-import com.auth0.jwt.interfaces.Verification
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
