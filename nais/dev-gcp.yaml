@@ -15,7 +15,7 @@ spec:
     enabled: false
     #path: /internal/metrics
   env:
-    - name: VARSEL_ENDPOINT
+    - name: NOTIFICATION_AGENCY_ENDPOINT_URL
       value: "https://tt02.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc"
   azure:
     application:
