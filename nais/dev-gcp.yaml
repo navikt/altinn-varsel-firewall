@@ -14,6 +14,8 @@ spec:
   prometheus:
     enabled: false
     #path: /internal/metrics
+  ingresses:
+    - https://altinn-varsel-firewall.dev.nav.no
   env:
     - name: NOTIFICATION_AGENCY_ENDPOINT_URL
       value: "https://tt02.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc"
@@ -24,3 +26,9 @@ spec:
     outbound:
       external:
         - host: tt02.altinn.no
+# WARNING: Ikke kommenter ut før notifikasjon-ekstern-varsling har
+# skrudd på Azure AD. Ellers må vi tvinge fram regenerering av
+# azure-ad-koblinger.
+#    inbound:
+#      rules:
+#        - application: notifikasjon-ekstern-varsling
