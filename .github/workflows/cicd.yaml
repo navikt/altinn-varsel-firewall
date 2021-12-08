@@ -44,14 +44,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: debug
-        run: |
-          ls target
-          ls target/altinn_varsel_firewall
-
-      - name: debug
-        run: docker build .
-
       - name: Build container image
         uses: docker/build-push-action@v2
         with:
