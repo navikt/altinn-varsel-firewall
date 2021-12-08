@@ -1,0 +1,26 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: altinn-varsel-firewall
+  namespace: fager
+  labels:
+    team: fager
+spec:
+  image: {{image}}
+  liveness:
+    path: /internal/alive
+  readiness:
+    path: /internal/ready
+  prometheus:
+    enabled: false
+    #path: /internal/metrics
+  env:
+    - name: VARSEL_ENDPOINT
+      value: "https://tt02.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc"
+  azure:
+    application:
+      enabled: true
+  accessPolicy:
+    outbound:
+      external:
+        - host: tt02.altinn.no
