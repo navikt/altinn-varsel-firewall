@@ -26,9 +26,6 @@ spec:
     outbound:
       external:
         - host: tt02.altinn.no
-# WARNING: Ikke kommenter ut før notifikasjon-ekstern-varsling har
-# skrudd på Azure AD. Ellers må vi tvinge fram regenerering av
-# azure-ad-koblinger.
-#    inbound:
-#      rules:
-#        - application: notifikasjon-ekstern-varsling
+    inbound:
+      rules:
+        - application: notifikasjon-ekstern-varsling
