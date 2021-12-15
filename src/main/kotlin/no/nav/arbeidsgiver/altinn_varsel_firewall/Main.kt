@@ -47,9 +47,6 @@ fun main() {
             mdc("path") { call ->
                 call.request.path()
             }
-            mdc("headers") { call ->
-                call.request.headers.names().joinToString()
-            }
             callIdMdc("x_correlation_id")
         }
 
