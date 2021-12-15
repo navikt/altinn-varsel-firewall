@@ -10,6 +10,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.features.*
 import io.ktor.http.*
+import io.ktor.http.HttpHeaders.Accept
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -95,8 +96,8 @@ fun main() {
                         call.request.headers["soapaction"]?.let {
                             headers["soapaction"] = it
                         }
-                        call.request.headers["accept"]?.let {
-                            headers["accept"] = it
+                        call.request.headers[Accept]?.let {
+                            headers[Accept] = it
                         }
                         body = call.request.receiveChannel()
                     }
