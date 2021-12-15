@@ -28,7 +28,10 @@ import java.util.concurrent.TimeUnit
 data class AzureAdPrincipal(val azp: String): Principal
 
 fun main() {
-    val httpClient = HttpClient(Apache)
+    val httpClient = HttpClient(Apache) {
+        expectSuccess = false
+    }
+
     val endpointUrl = getEndpointUrl()
 
     embeddedServer(Netty, port = 8080) {
