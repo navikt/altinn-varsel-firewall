@@ -67,7 +67,7 @@ fun main() {
                 call.respond(HttpStatusCode.OK)
             }
             authenticate {
-                get("/ServiceEngineExternal/NotificationAgencyExternalBasic.svc") {
+                post("/ServiceEngineExternal/NotificationAgencyExternalBasic.svc") {
                     /* Question: which request-headers to propagate */
                     val response = httpClient.post<HttpResponse>(endpointUrl) {
                         contentType(call.request.contentType())
