@@ -92,6 +92,12 @@ fun main() {
                     /* Question: which request-headers to propagate */
                     val response = httpClient.post<HttpResponse>(endpointUrl) {
                         contentType(call.request.contentType())
+                        call.request.headers["soapaction"]?.let {
+                            headers["soapaction"] = it
+                        }
+                        call.request.headers["accept"]?.let {
+                            headers["accept"] = it
+                        }
                         body = call.request.receiveChannel()
                     }
 
