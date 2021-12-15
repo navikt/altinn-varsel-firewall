@@ -8,6 +8,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -18,6 +19,7 @@ import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.slf4j.event.Level
 import java.io.OutputStream
 import java.net.URL
 import java.util.concurrent.TimeUnit
@@ -29,6 +31,25 @@ fun main() {
     val endpointUrl = getEndpointUrl()
 
     embeddedServer(Netty, port = 8080) {
+        install(CallLogging) {
+            level = Level.INFO
+
+            filter { call ->
+                !call.request.path().startsWith("/internal/")
+            }
+
+            mdc("method") { call ->
+                call.request.httpMethod.value
+            }
+            mdc("host") { call ->
+                call.request.header("host")
+            }
+            mdc("path") { call ->
+                call.request.path()
+            }
+            callIdMdc("x_correlation_id")
+        }
+
         install(Authentication) {
             jwt {
                 val issuer = System.getenv("AZURE_OPENID_CONFIG_ISSUER")
