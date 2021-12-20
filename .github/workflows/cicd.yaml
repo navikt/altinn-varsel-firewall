@@ -63,3 +63,12 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: nais/dev-gcp.yaml
+
+      - uses: nais/deploy/actions/deploy@v1
+        name: "deploy prod-gcp"
+        if: github.ref == 'refs/heads/main'
+        env:
+          IMAGE: ${{env.IMAGE}}:${{ github.sha }}
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: prod-gcp
+          RESOURCE: nais/prod-gcp.yaml

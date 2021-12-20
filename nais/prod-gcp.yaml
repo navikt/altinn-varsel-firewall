@@ -16,14 +16,14 @@ spec:
     #path: /internal/metrics
   env:
     - name: NOTIFICATION_AGENCY_ENDPOINT_URL
-      value: "https://tt02.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc"
+      value: "https://www.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc"
   azure:
     application:
       enabled: true
   accessPolicy:
     outbound:
       external:
-        - host: tt02.altinn.no
-    inbound:
-      rules:
-        - application: notifikasjon-ekstern-varsling
+        - host: www.altinn.no
+#    inbound:
+#      rules:
+#        - application: notifikasjon-ekstern-varsling
