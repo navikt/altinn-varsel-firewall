@@ -24,6 +24,6 @@ spec:
     outbound:
       external:
         - host: www.altinn.no
-#    inbound:
-#      rules:
-#        - application: notifikasjon-ekstern-varsling
+    inbound:
+      rules:
+        - application: notifikasjon-ekstern-varsling
