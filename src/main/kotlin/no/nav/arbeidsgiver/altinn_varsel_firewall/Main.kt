@@ -122,6 +122,7 @@ fun getEndpointUrl(): String {
     val fromConfig  = System.getenv("NOTIFICATION_AGENCY_ENDPOINT_URL")
     val fromEnv = when (val cluster = System.getenv("NAIS_CLUSTER_NAME")) {
         "dev-gcp" -> "https://tt02.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc"
+        "prod-gcp" -> "https://www.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc"
         else -> throw IllegalStateException("unknown cluster '$cluster'")
     }
 
