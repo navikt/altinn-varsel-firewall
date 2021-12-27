@@ -35,6 +35,7 @@ fun main() {
     val endpointUrl = getEndpointUrl()
 
     embeddedServer(Netty, port = 8080) {
+        install(SuspektLogging)
         install(CallLogging) {
             level = Level.INFO
 
