@@ -32,21 +32,15 @@ import io.ktor.http.HttpStatusCode.Companion.UpgradeRequired
 import io.ktor.http.HttpStatusCode.Companion.VariantAlsoNegotiates
 import io.ktor.http.HttpStatusCode.Companion.VersionNotSupported
 import io.ktor.util.*
-import org.slf4j.event.Level
 
-class SuspektLogging(configuration: Configuration) {
-    val level = configuration.level
-
-    class Configuration {
-        var level = Level.ERROR
-    }
+class SuspektLogging {
+    class Configuration
 
     companion object Feature : ApplicationFeature<ApplicationCallPipeline, Configuration, SuspektLogging> {
         override val key = AttributeKey<SuspektLogging>("SuspektLogging")
 
         override fun install(pipeline: ApplicationCallPipeline, configure: Configuration.() -> Unit): SuspektLogging {
-            val configuration = Configuration().apply(configure)
-            val plugin = SuspektLogging(configuration)
+            val plugin = SuspektLogging()
 
             pipeline.intercept(ApplicationCallPipeline.Monitoring) {
                 proceed()
