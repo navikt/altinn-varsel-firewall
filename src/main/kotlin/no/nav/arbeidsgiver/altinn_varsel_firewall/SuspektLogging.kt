@@ -32,9 +32,7 @@ import io.ktor.http.HttpStatusCode.Companion.UpgradeRequired
 import io.ktor.http.HttpStatusCode.Companion.VariantAlsoNegotiates
 import io.ktor.http.HttpStatusCode.Companion.VersionNotSupported
 import io.ktor.util.*
-import org.slf4j.Logger
 import org.slf4j.event.Level
-import org.slf4j.spi.LoggingEventBuilder
 
 class SuspektLogging(configuration: Configuration) {
     val level = configuration.level
@@ -44,8 +42,7 @@ class SuspektLogging(configuration: Configuration) {
     }
 
     companion object Feature : ApplicationFeature<ApplicationCallPipeline, Configuration, SuspektLogging> {
-        private val logger = logger()
-        override val key = AttributeKey<SuspektLogging>("DetektivPlugin")
+        override val key = AttributeKey<SuspektLogging>("SuspektLogging")
 
         override fun install(pipeline: ApplicationCallPipeline, configure: Configuration.() -> Unit): SuspektLogging {
             val configuration = Configuration().apply(configure)
@@ -89,7 +86,7 @@ class SuspektLogging(configuration: Configuration) {
                     InsufficientStorage,
                     -> {
                         // sus: log and alert
-                        logger.at(configuration.level).log("""
+                        application.log.error("""
                             suspekt oppførsel:
                             response: ${call.response.status()} 
                             request: ${call.request.toLogString()} ${
@@ -104,5 +101,3 @@ class SuspektLogging(configuration: Configuration) {
         }
     }
 }
-
-fun Logger.at(level: Level): LoggingEventBuilder = makeLoggingEventBuilder(level)
