@@ -32,12 +32,15 @@ import io.ktor.http.HttpStatusCode.Companion.UpgradeRequired
 import io.ktor.http.HttpStatusCode.Companion.VariantAlsoNegotiates
 import io.ktor.http.HttpStatusCode.Companion.VersionNotSupported
 import io.ktor.util.*
+import java.util.concurrent.atomic.AtomicInteger
+
 
 class SuspektLogging {
     class Configuration
 
     companion object Feature : ApplicationFeature<ApplicationCallPipeline, Configuration, SuspektLogging> {
         override val key = AttributeKey<SuspektLogging>("SuspektLogging")
+        val antall = Health.meterRegistry.gauge("suspekt.antall", AtomicInteger(0))!!
 
         override fun install(pipeline: ApplicationCallPipeline, configure: Configuration.() -> Unit): SuspektLogging {
             val plugin = SuspektLogging()
@@ -79,15 +82,14 @@ class SuspektLogging {
                     VariantAlsoNegotiates,
                     InsufficientStorage,
                     -> {
-                        // sus: log and alert
                         application.log.error("""
                             suspekt oppførsel:
                             response: ${call.response.status()} 
-                            request: ${call.request.toLogString()} ${
-                            call.request.headers.entries().map { "${it.key}=${it.value.joinToString()}" }
+                            request: ${call.request.toLogString()} 
+                            ${call.request.headers.entries().map { "${it.key}=${it.value.joinToString()}" }
                         }
                         """.trimIndent().replace(Regex("\n"), " "))
-                        // TODO: metric med alert
+                        antall.incrementAndGet()
                     }
                 }
             }

@@ -19,11 +19,14 @@ import io.ktor.server.netty.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.slf4j.event.Level
 import java.io.OutputStream
 import java.net.URL
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
 
 data class AzureAdPrincipal(val azp: String): Principal
 
@@ -33,6 +36,10 @@ fun main() {
     }
 
     val endpointUrl = getEndpointUrl()
+
+    val metricsDispatcher: CoroutineContext = Executors.newFixedThreadPool(1)
+        .produceMetrics("internal-http")
+        .asCoroutineDispatcher()
 
     embeddedServer(Netty, port = 8080) {
         install(SuspektLogging)
@@ -91,6 +98,11 @@ fun main() {
             }
             get("/internal/ready") {
                 call.respond(HttpStatusCode.OK)
+            }
+            get("/internal/metrics") {
+                withContext(this.coroutineContext + metricsDispatcher) {
+                    call.respond(Health.meterRegistry.scrape())
+                }
             }
             authenticate {
                 post("/ServiceEngineExternal/NotificationAgencyExternalBasic.svc") {
