@@ -12,8 +12,8 @@ spec:
   readiness:
     path: /internal/ready
   prometheus:
-    enabled: false
-    #path: /internal/metrics
+    enabled: true
+    path: /internal/metrics
   env:
     - name: NOTIFICATION_AGENCY_ENDPOINT_URL
       value: "https://tt02.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc"
