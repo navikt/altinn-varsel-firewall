@@ -53,10 +53,9 @@ class SuspektLoggingTest : DescribeSpec({
                 it("logs $statusCode as sus") {
                     verify {
                         spiedOnLogger.error(
-                            withArg { msg: String ->
-                                msg shouldContain "suspekt"
-                                msg shouldContain "$statusCode"
-                            }
+                            withArg { it shouldContain "suspekt oppførsel" },
+                            statusCode,
+                            any(),
                         )
                     }
                 }
@@ -77,7 +76,7 @@ class SuspektLoggingTest : DescribeSpec({
 
                 it("does not log") {
                     verify(exactly = 0) {
-                        spiedOnLogger.error(any())
+                        spiedOnLogger.error(any() as String, any(), any())
                     }
                 }
 

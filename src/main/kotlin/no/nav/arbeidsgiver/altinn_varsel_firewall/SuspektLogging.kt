@@ -82,13 +82,10 @@ class SuspektLogging {
                     VariantAlsoNegotiates,
                     InsufficientStorage,
                     -> {
-                        application.log.error("""
-                            suspekt oppførsel:
-                            response: ${call.response.status()} 
-                            request: ${call.request.toLogString()} 
-                            ${call.request.headers.entries().map { "${it.key}=${it.value.joinToString()}" }
-                        }
-                        """.trimIndent().replace(Regex("\n"), " "))
+                        application.log.error(
+                            "suspekt oppførsel: response: {} request: {}",
+                            call.response.status(), call.request.toLogString()
+                        )
                         antall.incrementAndGet()
                     }
                 }
