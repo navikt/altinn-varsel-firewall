@@ -57,7 +57,7 @@ jobs:
 
       - uses: nais/deploy/actions/deploy@v1
         name: "deploy dev-gcp"
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' || github.event_type == 'workflow_dispatch'
         env:
           IMAGE: ${{env.IMAGE}}:${{ github.sha }}
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
