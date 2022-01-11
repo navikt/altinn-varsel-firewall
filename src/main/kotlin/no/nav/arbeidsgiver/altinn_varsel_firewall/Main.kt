@@ -1,6 +1,8 @@
 package no.nav.arbeidsgiver.altinn_varsel_firewall
 
 import com.auth0.jwk.JwkProviderBuilder
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -28,12 +30,17 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 
-data class AzureAdPrincipal(val azp: String): Principal
+data class PreAuthorizedApp(
+    val name: String,
+    val clientId: String,
+): Principal
 
 fun main() {
     val httpClient = HttpClient(Apache) {
         expectSuccess = false
     }
+
+    val objectMapper = jacksonObjectMapper()
 
     val endpointUrl = getEndpointUrl()
 
@@ -67,6 +74,11 @@ fun main() {
                 val issuer = System.getenv("AZURE_OPENID_CONFIG_ISSUER")
                 val jwksUri = System.getenv("AZURE_OPENID_CONFIG_JWKS_URI")
                 val audience = System.getenv("AZURE_APP_CLIENT_ID")
+                val preAuthorizedApps = objectMapper.readValue<List<PreAuthorizedApp>>(
+                    System.getenv("AZURE_APP_PRE_AUTHORIZED_APPS")
+                )
+
+                log.info("pre authorized apps: $preAuthorizedApps")
 
                 val jwkProvider = JwkProviderBuilder(URL(jwksUri))
                     .cached(10, 24, TimeUnit.HOURS)
@@ -87,7 +99,11 @@ fun main() {
                         return@validate null
                     }
 
-                    AzureAdPrincipal(azp = azp)
+                    preAuthorizedApps.find { it.clientId == azp }
+                        ?: run {
+                            log.error("azp={} not among pre-authorized apps={}", azp, preAuthorizedApps.joinToString(", "))
+                            return@validate null
+                        }
                 }
 
             }
