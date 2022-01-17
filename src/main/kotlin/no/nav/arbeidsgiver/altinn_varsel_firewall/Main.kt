@@ -66,6 +66,9 @@ fun main() {
             mdc("path") { call ->
                 call.request.path()
             }
+            mdc("azp") { call ->
+                call.authentication.principal<PreAuthorizedApp>()?.clientId ?: ""
+            }
             callIdMdc("x_correlation_id")
         }
 
