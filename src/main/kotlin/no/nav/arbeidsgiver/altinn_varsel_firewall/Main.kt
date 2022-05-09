@@ -67,6 +67,9 @@ fun main() {
             mdc("path") { call ->
                 call.request.path()
             }
+            mdc("clientId") { call ->
+                call.principal<PreAuthorizedApp>()?.clientId
+            }
             callIdMdc("x_correlation_id")
         }
 
