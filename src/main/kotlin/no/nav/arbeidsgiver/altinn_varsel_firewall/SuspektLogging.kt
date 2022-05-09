@@ -1,7 +1,7 @@
 package no.nav.arbeidsgiver.altinn_varsel_firewall
 
-import io.ktor.application.*
-import io.ktor.features.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Conflict
 import io.ktor.http.HttpStatusCode.Companion.ExpectationFailed
@@ -31,6 +31,7 @@ import io.ktor.http.HttpStatusCode.Companion.UnsupportedMediaType
 import io.ktor.http.HttpStatusCode.Companion.UpgradeRequired
 import io.ktor.http.HttpStatusCode.Companion.VariantAlsoNegotiates
 import io.ktor.http.HttpStatusCode.Companion.VersionNotSupported
+import io.ktor.server.logging.*
 import io.ktor.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -38,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class SuspektLogging {
     class Configuration
 
-    companion object Feature : ApplicationFeature<ApplicationCallPipeline, Configuration, SuspektLogging> {
+    companion object Feature : BaseApplicationPlugin<ApplicationCallPipeline, Configuration, SuspektLogging> {
         override val key = AttributeKey<SuspektLogging>("SuspektLogging")
         val antall = Health.meterRegistry.gauge("suspekt.antall", AtomicInteger(0))!!
 
