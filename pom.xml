@@ -10,7 +10,7 @@
 
     <properties>
         <kotlin.version>1.6.10</kotlin.version>
-        <ktor.version>1.6.8</ktor.version>
+        <ktor.version>2.0.1</ktor.version>
         <kotest.version>4.6.0</kotest.version>
         <!-- <kotlin.compiler.incremental>true</kotlin.compiler.incremental> -->
         <jvm.version>15</jvm.version>
@@ -35,32 +35,32 @@
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-call-logging-jvm</artifactId>
-            <version>2.0.1</version>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-call-id-jvm</artifactId>
-            <version>2.0.1</version>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-netty-jvm</artifactId>
-            <version>2.0.1</version>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-auth-jwt-jvm</artifactId>
-            <version>2.0.1</version>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-content-negotiation-jvm</artifactId>
-            <version>2.0.1</version>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-metrics-micrometer-jvm</artifactId>
-            <version>2.0.1</version>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -72,12 +72,12 @@
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-client-apache-jvm</artifactId>
-            <version>2.0.1</version>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-client-jackson-jvm</artifactId>
-            <version>2.0.1</version>
+            <version>${ktor.version}</version>
         </dependency>
 
         <!-- altinn-ws -->
@@ -177,13 +177,13 @@
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-test-host-jvm</artifactId>
-            <version>2.0.1</version>
+            <version>${ktor.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-client-mock-jvm</artifactId>
-            <version>2.0.1</version>
+            <version>${ktor.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
