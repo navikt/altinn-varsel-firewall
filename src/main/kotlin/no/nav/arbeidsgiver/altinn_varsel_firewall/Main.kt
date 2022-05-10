@@ -52,6 +52,7 @@ fun main() {
     embeddedServer(Netty, port = 8080) {
         install(SuspektLogging)
         install(CallLogging) {
+            disableDefaultColors()
             level = Level.INFO
 
             filter { call ->
@@ -67,8 +68,8 @@ fun main() {
             mdc("path") { call ->
                 call.request.path()
             }
-            mdc("clientId") { call ->
-                call.principal<PreAuthorizedApp>()?.clientId
+            mdc("preAuthorizedAppName") { call ->
+                call.principal<PreAuthorizedApp>()?.name
             }
             callIdMdc("x_correlation_id")
         }
