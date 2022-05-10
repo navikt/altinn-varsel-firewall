@@ -3,21 +3,22 @@ package no.nav.arbeidsgiver.altinn_varsel_firewall
 import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.auth.jwt.*
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.http.HttpHeaders.Accept
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.callid.*
+import io.ktor.server.plugins.callloging.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +52,7 @@ fun main() {
     embeddedServer(Netty, port = 8080) {
         install(SuspektLogging)
         install(CallLogging) {
+            disableDefaultColors()
             level = Level.INFO
 
             filter { call ->
@@ -66,6 +68,9 @@ fun main() {
             mdc("path") { call ->
                 call.request.path()
             }
+            mdc("preAuthorizedAppName") { call ->
+                call.principal<PreAuthorizedApp>()?.name
+            }
             callIdMdc("x_correlation_id")
         }
 
@@ -78,7 +83,7 @@ fun main() {
                     System.getenv("AZURE_APP_PRE_AUTHORIZED_APPS")
                 )
 
-                log.info("pre authorized apps: $preAuthorizedApps")
+                this@embeddedServer.log.info("pre authorized apps: $preAuthorizedApps")
 
                 val jwkProvider = JwkProviderBuilder(URL(jwksUri))
                     .cached(10, 24, TimeUnit.HOURS)
@@ -95,13 +100,13 @@ fun main() {
 
                 validate {
                     val azp = it.payload.getClaim("azp").asString() ?: run {
-                        log.error("AzureAD missing azp-claim")
+                        this@embeddedServer.log.error("AzureAD missing azp-claim")
                         return@validate null
                     }
 
                     preAuthorizedApps.find { it.clientId == azp }
                         ?: run {
-                            log.error("azp={} not among pre-authorized apps={}", azp, preAuthorizedApps.joinToString(", "))
+                            this@embeddedServer.log.error("azp={} not among pre-authorized apps={}", azp, preAuthorizedApps.joinToString(", "))
                             return@validate null
                         }
                 }
@@ -123,7 +128,7 @@ fun main() {
             authenticate {
                 post("/ServiceEngineExternal/NotificationAgencyExternalBasic.svc") {
                     /* Question: which request-headers to propagate */
-                    val response = httpClient.post<HttpResponse>(endpointUrl) {
+                    val response = httpClient.post(endpointUrl) {
                         contentType(call.request.contentType())
                         call.request.headers["soapaction"]?.let {
                             headers["soapaction"] = it
@@ -131,7 +136,7 @@ fun main() {
                         call.request.headers[Accept]?.let {
                             headers[Accept] = it
                         }
-                        body = call.request.receiveChannel()
+                        setBody(call.request.receiveChannel())
                     }
 
                     call.respondOutputStream(
@@ -139,7 +144,7 @@ fun main() {
                         contentType = response.contentType(),
                     ) {
                         /* Question: which response-headers to propagate */
-                        response.content.transferTo(this)
+                        response.bodyAsChannel().transferTo(this)
                     }
                 }
             }

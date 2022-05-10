@@ -2,7 +2,7 @@ package no.nav.arbeidsgiver.altinn_varsel_firewall
 
 import io.kotest.core.listeners.TestListener
 import io.kotest.core.spec.Spec
-import io.ktor.application.*
+import io.ktor.server.application.*
 import io.ktor.server.testing.*
 
 class KtorTestListener(
