@@ -6,6 +6,7 @@ import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.PatternLayout
 import ch.qos.logback.classic.spi.Configurator
 import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.classic.spi.IThrowableProxy
 import ch.qos.logback.core.Appender
 import ch.qos.logback.core.AppenderBase
 import ch.qos.logback.core.ConsoleAppender
@@ -70,6 +71,16 @@ class MaskingAppender: AppenderBase<ILoggingEvent>() {
             object : ILoggingEvent by event {
                 override fun getFormattedMessage(): String? =
                     mask(event.formattedMessage)
+
+                override fun getThrowableProxy(): IThrowableProxy? {
+                    if (event.throwableProxy == null) {
+                        return null
+                    }
+                    return object : IThrowableProxy by event.throwableProxy {
+                        override fun getMessage(): String? =
+                            mask(event.throwableProxy.message)
+                    }
+                }
             }
         )
     }
