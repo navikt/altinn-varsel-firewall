@@ -77,7 +77,7 @@ class SuspektLogging {
                     TooManyRequests,
                     RequestHeaderFieldTooLarge,
                         /* 5xx */
-                    InternalServerError,
+                    /* InternalServerError, SoapFault kommer som 500, lar den passere */
                     NotImplemented,
                     VersionNotSupported,
                     VariantAlsoNegotiates,
