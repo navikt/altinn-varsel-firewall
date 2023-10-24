@@ -22,7 +22,7 @@ inline fun <reified T : Any> T.logger(): org.slf4j.Logger =
 
 @Suppress("unused") /* see resources/META-INF/services/ch.qos.logback.classic.spi */
 class LogConfig : ContextAwareBase(), Configurator {
-    override fun configure(lc: LoggerContext) {
+    override fun configure(lc: LoggerContext): Configurator.ExecutionStatus {
         val naisCluster = System.getenv("NAIS_CLUSTER_NAME")
 
         val rootAppender = MaskingAppender().setup(lc) {
@@ -49,6 +49,7 @@ class LogConfig : ContextAwareBase(), Configurator {
         if (naisCluster == null || naisCluster == "dev-gcp") {
             lc.getLogger("io.ktor.auth.jwt").level = Level.TRACE
         }
+        return Configurator.ExecutionStatus.DO_NOT_INVOKE_NEXT_IF_ANY
     }
 }
 

@@ -31,7 +31,7 @@ jobs:
 
       - uses: nais/deploy/actions/deploy@v1
         name: "deploy dev-gcp"
-        if: github.ref == 'refs/heads/main' || github.event_name == 'no_log_500'
+        if: github.ref == 'refs/heads/main' || github.ref== 'refs/heads/oppgrader'
         env:
           IMAGE: ${{ steps.gar-push.outputs.image }}
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}

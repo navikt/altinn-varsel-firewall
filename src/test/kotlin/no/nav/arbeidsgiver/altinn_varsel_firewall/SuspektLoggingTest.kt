@@ -1,91 +1,86 @@
 package no.nav.arbeidsgiver.altinn_varsel_firewall
 
-import io.kotest.core.datatest.forAll
-import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
 import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.http.HttpStatusCode.Companion.BadRequest
+import io.ktor.http.HttpStatusCode.Companion.Forbidden
+import io.ktor.http.HttpStatusCode.Companion.NoContent
+import io.ktor.http.HttpStatusCode.Companion.NotFound
+import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
-import io.mockk.clearAllMocks
-import io.mockk.spyk
-import io.mockk.verify
 import no.nav.arbeidsgiver.altinn_varsel_firewall.Health.meterRegistry
-import org.slf4j.LoggerFactory
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.*
+import org.slf4j.event.Level
 
-class SuspektLoggingTest : DescribeSpec({
-    val spiedOnLogger = spyk(LoggerFactory.getLogger("KtorTestApplicationLogger"))
-    val engine = TestApplicationEngine(
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class SuspektLoggingTest {
+    private val fakeLogger = FakeLogger()
+    private val engine = TestApplicationEngine(
         environment = createTestEnvironment {
-            log = spiedOnLogger
+            log = fakeLogger
         }
     )
-    listener(KtorTestListener(engine) {
-        install(SuspektLogging)
-    })
 
-    fun whenResponseStatus(code: HttpStatusCode): TestApplicationResponse {
-        val path = "/status/${code.value}"
-        engine.environment.application.routing {
-            get(path) {
-                this.call.respond(code, "")
-            }
-        }
-        return engine.handleRequest(HttpMethod.Get, path).response
+    @Test
+    fun badRequestSuspekt() = assertStatusCode(BadRequest, isSuspect = true)
+
+    @Test
+    fun notFoundSuspekt() = assertStatusCode(NotFound, isSuspect = true)
+
+    @Test
+    fun forbiddenSuspekt() = assertStatusCode(Forbidden, isSuspect = true)
+
+    @Test
+    fun okNormalt() = assertStatusCode(OK, isSuspect = false)
+
+    @Test
+    fun noContentNormalt() = assertStatusCode(NoContent, isSuspect = false)
+
+    @BeforeAll
+    fun beforeAll() {
+        engine.start()
+        engine.application.install(SuspektLogging)
     }
 
-    beforeContainer {
-        clearAllMocks()
+    @AfterAll
+    fun afterAll() {
+        engine.stop(0L, 0L)
+    }
+
+    @BeforeEach
+    fun beforeEach() {
+        fakeLogger.clear()
         SuspektLogging.antall.set(0)
     }
 
-    describe("suspekt logging behaviour") {
-        forAll(
-            HttpStatusCode.BadRequest,
-            HttpStatusCode.NotFound,
-            HttpStatusCode.Forbidden,
-        ) { statusCode ->
-            context("when a $statusCode is returned") {
-                whenResponseStatus(statusCode)
-
-                it("logs $statusCode as sus") {
-                    verify {
-                        spiedOnLogger.error(
-                            withArg { it shouldContain "suspekt oppførsel" },
-                            statusCode,
-                            any(),
-                        )
-                    }
-                }
-
-                it("increments gauge value") {
-                    val suspektGauge = meterRegistry.get("suspekt.antall").gauge()
-                    suspektGauge.value() shouldBe 1
-                }
+    private fun assertStatusCode(httpStatusCode: HttpStatusCode, isSuspect: Boolean) {
+        // given
+        val path = "/status/${httpStatusCode.value}"
+        engine.environment.application.routing {
+            get(path) {
+                call.respond<String>(httpStatusCode, "")
             }
         }
 
-        forAll(
-            HttpStatusCode.OK,
-            HttpStatusCode.NoContent,
-        ) { statusCode ->
-            context("when $statusCode is returned") {
-                whenResponseStatus(statusCode)
+        // when
+        engine.handleRequest(HttpMethod.Get, path).response
 
-                it("does not log") {
-                    verify(exactly = 0) {
-                        spiedOnLogger.error(any() as String, any(), any())
-                    }
-                }
+        // then
+        val logEntry = fakeLogger.entries.find {
+            it.level == Level.ERROR && it.messagePattern.contains("suspekt oppførsel")
+        }
+        val suspektAntall = meterRegistry.get("suspekt.antall").gauge().value()
 
-                it("does not increment gauge value") {
-                    val suspektGauge = meterRegistry.get("suspekt.antall").gauge()
-                    suspektGauge.value() shouldBe 0
-                }
-            }
+        if (isSuspect) {
+            assertNotNull(logEntry, "$httpStatusCode er suspekt, men ingen error er logget")
+            assertEquals(1.0, suspektAntall, "$httpStatusCode er suspekt, men suspekt-gauge har ikke økt")
+        } else {
+            assertNull(logEntry, "$httpStatusCode er normalt, men error er logget")
+            assertEquals(0.0, suspektAntall, "$httpStatusCode er normalt, men suspekt-gauge har økt")
         }
     }
-})
+}
 
