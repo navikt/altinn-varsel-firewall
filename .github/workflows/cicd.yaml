@@ -28,10 +28,11 @@ jobs:
           tag: ${{ github.sha }}
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          byosbom: target/bom.json
 
       - uses: nais/deploy/actions/deploy@v1
         name: "deploy dev-gcp"
-        if: github.ref == 'refs/heads/main' || github.ref== 'refs/heads/oppgrader'
+        if: github.ref == 'refs/heads/main' || github.ref== 'refs/heads/bump_deps_byosbom'
         env:
           IMAGE: ${{ steps.gar-push.outputs.image }}
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
