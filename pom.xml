@@ -12,7 +12,7 @@
         <kotlin.version>1.9.21</kotlin.version>
         <ktor.version>2.3.7</ktor.version>
         <!-- <kotlin.compiler.incremental>true</kotlin.compiler.incremental> -->
-        <jvm.version>17</jvm.version>
+        <jvm.version>21</jvm.version>
         <maven.compiler.source>${jvm.version}</maven.compiler.source>
         <maven.compiler.target>${jvm.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
