@@ -11,12 +11,12 @@ jobs:
       contents: "read"
       id-token: "write"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
           cache: maven
 
       - run: mvn -B package
@@ -32,7 +32,7 @@ jobs:
 
       - uses: nais/deploy/actions/deploy@v1
         name: "deploy dev-gcp"
-        if: github.ref == 'refs/heads/main' || github.ref== 'refs/heads/bump_deps_byosbom'
+        if: github.ref == 'refs/heads/main' || github.ref== 'refs/heads/jvm21'
         env:
           IMAGE: ${{ steps.gar-push.outputs.image }}
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
