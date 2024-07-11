@@ -13,6 +13,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.*
+import io.ktor.server.metrics.micrometer.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.callloging.*
@@ -26,7 +27,6 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.slf4j.event.Level
 import java.io.OutputStream
-import java.net.URL
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
@@ -85,7 +85,7 @@ fun main() {
 
                 this@embeddedServer.log.info("pre authorized apps: $preAuthorizedApps")
 
-                val jwkProvider = JwkProviderBuilder(URL(jwksUri))
+                val jwkProvider = JwkProviderBuilder(jwksUri)
                     .cached(10, 24, TimeUnit.HOURS)
                     .rateLimited(
                         10,
@@ -113,6 +113,10 @@ fun main() {
 
             }
         }
+        install(MicrometerMetrics) {
+            registry = Health.meterRegistry
+        }
+
         routing {
             get("/internal/alive") {
                 call.respond(HttpStatusCode.OK)
