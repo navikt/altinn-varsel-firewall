@@ -30,20 +30,18 @@ jobs:
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           byosbom: target/bom.json
 
-      - uses: nais/deploy/actions/deploy@v1
+      - uses: nais/deploy/actions/deploy@v2
         name: "deploy dev-gcp"
         if: github.ref == 'refs/heads/main' || github.ref== 'refs/heads/jvm21'
         env:
           IMAGE: ${{ steps.gar-push.outputs.image }}
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: nais/dev-gcp.yaml
 
-      - uses: nais/deploy/actions/deploy@v1
+      - uses: nais/deploy/actions/deploy@v2
         name: "deploy prod-gcp"
         if: github.ref == 'refs/heads/main'
         env:
           IMAGE: ${{ steps.gar-push.outputs.image }}
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
           RESOURCE: nais/prod-gcp.yaml
