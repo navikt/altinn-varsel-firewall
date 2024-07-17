@@ -34,7 +34,7 @@ jobs:
         name: "deploy dev-gcp"
         if: github.ref == 'refs/heads/main' || github.ref== 'refs/heads/jvm21'
         env:
-          IMAGE: ${{ steps.gar-push.outputs.image }}
+          VAR: image=${{ steps.gar-push.outputs.image }}
           CLUSTER: dev-gcp
           RESOURCE: nais/dev-gcp.yaml
 
@@ -42,6 +42,6 @@ jobs:
         name: "deploy prod-gcp"
         if: github.ref == 'refs/heads/main'
         env:
-          IMAGE: ${{ steps.gar-push.outputs.image }}
+          VAR: image=${{ steps.gar-push.outputs.image }}
           CLUSTER: prod-gcp
           RESOURCE: nais/prod-gcp.yaml
