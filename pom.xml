@@ -12,11 +12,21 @@
         <kotlin.version>2.0.10</kotlin.version>
         <ktor.version>2.3.12</ktor.version>
         <!-- <kotlin.compiler.incremental>true</kotlin.compiler.incremental> -->
-        <jvm.version>17</jvm.version>
+        <jvm.version>21</jvm.version>
         <maven.compiler.source>${jvm.version}</maven.compiler.source>
         <maven.compiler.target>${jvm.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>33.0.0-jre</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
