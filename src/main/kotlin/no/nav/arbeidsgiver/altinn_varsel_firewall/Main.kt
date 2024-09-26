@@ -4,7 +4,7 @@ import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.*
-import io.ktor.client.engine.apache.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -26,7 +26,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.slf4j.event.Level
 import java.io.OutputStream
-import java.net.URL
+import java.net.URI
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
@@ -34,10 +34,10 @@ import kotlin.coroutines.CoroutineContext
 data class PreAuthorizedApp(
     val name: String,
     val clientId: String,
-): Principal
+) : Principal
 
 fun main() {
-    val httpClient = HttpClient(Apache) {
+    val httpClient = HttpClient(CIO) {
         expectSuccess = false
     }
 
@@ -85,7 +85,7 @@ fun main() {
 
                 this@embeddedServer.log.info("pre authorized apps: $preAuthorizedApps")
 
-                val jwkProvider = JwkProviderBuilder(URL(jwksUri))
+                val jwkProvider = JwkProviderBuilder(URI(jwksUri).toURL())
                     .cached(10, 24, TimeUnit.HOURS)
                     .rateLimited(
                         10,
@@ -98,15 +98,19 @@ fun main() {
                     withAudience(audience)
                 }
 
-                validate {
-                    val azp = it.payload.getClaim("azp").asString() ?: run {
+                validate { jwt ->
+                    val azp = jwt.payload.getClaim("azp").asString() ?: run {
                         this@embeddedServer.log.error("AzureAD missing azp-claim")
                         return@validate null
                     }
 
                     preAuthorizedApps.find { it.clientId == azp }
                         ?: run {
-                            this@embeddedServer.log.error("azp={} not among pre-authorized apps={}", azp, preAuthorizedApps.joinToString(", "))
+                            this@embeddedServer.log.error(
+                                "azp={} not among pre-authorized apps={}",
+                                azp,
+                                preAuthorizedApps.joinToString(", ")
+                            )
                             return@validate null
                         }
                 }
@@ -153,7 +157,7 @@ fun main() {
 }
 
 fun getEndpointUrl(): String {
-    val fromConfig  = System.getenv("NOTIFICATION_AGENCY_ENDPOINT_URL")
+    val fromConfig = System.getenv("NOTIFICATION_AGENCY_ENDPOINT_URL")
     val fromEnv = when (val cluster = System.getenv("NAIS_CLUSTER_NAME")) {
         "dev-gcp" -> "https://tt02.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc"
         "prod-gcp" -> "https://www.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc"
