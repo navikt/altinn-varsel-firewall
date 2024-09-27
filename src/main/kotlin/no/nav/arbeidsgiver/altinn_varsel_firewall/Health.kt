@@ -2,9 +2,10 @@ package no.nav.arbeidsgiver.altinn_varsel_firewall
 
 import io.micrometer.core.instrument.Clock
 import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics
-import io.micrometer.prometheus.PrometheusConfig
-import io.micrometer.prometheus.PrometheusMeterRegistry
-import io.prometheus.client.CollectorRegistry
+import io.micrometer.prometheusmetrics.PrometheusConfig
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
+import io.prometheus.metrics.model.registry.PrometheusRegistry
+
 import java.util.concurrent.ExecutorService
 
 
@@ -13,7 +14,7 @@ object Health {
 
     val meterRegistry = PrometheusMeterRegistry(
         PrometheusConfig.DEFAULT,
-        CollectorRegistry.defaultRegistry,
+        PrometheusRegistry.defaultRegistry,
         clock
     )
 }
