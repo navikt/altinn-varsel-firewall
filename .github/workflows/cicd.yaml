@@ -32,7 +32,7 @@ jobs:
 
       - uses: nais/deploy/actions/deploy@v2
         name: "deploy dev-gcp"
-        if: github.ref == 'refs/heads/main' || github.ref== 'refs/heads/dep_upgrade'
+        if: github.ref == 'refs/heads/main' || github.ref== 'refs/heads/s_netty_cio'
         env:
           VAR: image=${{ steps.gar-push.outputs.image }}
           CLUSTER: dev-gcp
