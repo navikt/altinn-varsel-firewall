@@ -10,7 +10,7 @@
 
     <properties>
         <kotlin.version>2.0.10</kotlin.version>
-        <ktor.version>2.3.12</ktor.version>
+        <ktor.version>2.3.13</ktor.version>
         <!-- <kotlin.compiler.incremental>true</kotlin.compiler.incremental> -->
         <jvm.version>21</jvm.version>
         <maven.compiler.source>${jvm.version}</maven.compiler.source>
@@ -110,7 +110,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.8</version>
+            <version>1.5.16</version>
         </dependency>
 
         <!-- auth -->
