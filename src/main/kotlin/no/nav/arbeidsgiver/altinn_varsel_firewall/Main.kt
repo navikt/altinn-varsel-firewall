@@ -13,7 +13,6 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.request.*
@@ -49,7 +48,7 @@ fun main() {
         .produceMetrics("internal-http")
         .asCoroutineDispatcher()
 
-    embeddedServer(Netty, port = 8080) {
+    embeddedServer(io.ktor.server.cio.CIO, port = 8080) {
         install(SuspektLogging)
         install(CallLogging) {
             disableDefaultColors()
