@@ -118,10 +118,10 @@ fun main() {
         }
         routing {
             get("/internal/alive") {
-                call.respond(HttpStatusCode.OK)
+                call.response.status(HttpStatusCode.OK)
             }
             get("/internal/ready") {
-                call.respond(HttpStatusCode.OK)
+                call.response.status(HttpStatusCode.OK)
             }
             get("/internal/metrics") {
                 withContext(this.coroutineContext + metricsDispatcher) {
