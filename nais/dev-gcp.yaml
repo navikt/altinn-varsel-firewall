@@ -14,6 +14,14 @@ spec:
   prometheus:
     enabled: true
     path: /internal/metrics
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+    logging:
+      destinations:
+        - id: loki
+        - id: elastic
   env:
     - name: NOTIFICATION_AGENCY_ENDPOINT_URL
       value: "https://tt02.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc"
