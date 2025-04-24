@@ -2,6 +2,9 @@ name: ci/cd
 on:
   push:
   workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1' # bygg nytt image hver mandag morgen
+
 
 
 jobs:
