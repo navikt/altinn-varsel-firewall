@@ -29,8 +29,6 @@ jobs:
         with:
           team: fager
           tag: ${{ github.sha }}
-          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
-          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           byosbom: target/bom.json
 
       - uses: nais/deploy/actions/deploy@v2
